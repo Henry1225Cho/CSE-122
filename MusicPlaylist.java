@@ -1,0 +1,150 @@
+import java.util.*;
+import java.io.*;
+
+// Yunho Cho
+// TA: Ben Wang
+// CSE 122 AF
+// July 13 2023
+// Music Playlist
+// This class is a Music Playlist. It's like spotify where you can add(queue) 
+// song delete them or print out the history unless you're Playlist is empty.
+public class MusicPlaylist {
+    // TODO: Your Code Here
+    public static void main(String[] args) {
+        Queue<String> playList = new LinkedList<String>();
+        Stack<String> history = new Stack<String> ();
+        Scanner console = new Scanner(System.in);
+        System.out.println("Welcome to the CSE 122 Music Playlist!");
+        mainMenu();
+        String choice = console.nextLine();
+        while(!choice.equalsIgnoreCase("Q")) {
+            if(choice.equalsIgnoreCase("A")) {
+                addSong(playList, console);
+            } else if(choice.equalsIgnoreCase("P")) {
+                playSong(playList, history);
+            } else if(choice.equalsIgnoreCase("Pr")) {
+                print(history);
+            } else if(choice.equalsIgnoreCase("C")) {
+                history.clear();
+            } else if(choice.equalsIgnoreCase("D")) {
+                removeSong(history, console);
+            }
+            System.out.println();
+            System.out.println();
+            mainMenu();
+            choice = console.nextLine();
+            }
+    }
+    
+    // Prints the introductory statements before modifies the music playlist
+    // and reduces the redundancy.
+    // no exception 
+    // no return
+    // no parameter
+    public static void mainMenu() {
+        System.out.println("(A) Add song");
+        System.out.println("(P) Play song");
+        System.out.println("(Pr) Print history");
+        System.out.println("(C) Clear history");
+        System.out.println("(D) Delete from history");
+        System.out.println("(Q) Quit");
+        System.out.println();
+        System.out.print("Enter your choice: ");
+    }
+
+    // Adds a new song to the current playlist.
+    // no exception
+    // no return 
+    // Parameter:
+    //   - playList: current music queue
+    // - console: user input for the song name
+    public static void addSong(Queue<String> playList, Scanner console) {
+        System.out.print("Enter song name: ");
+        String music = console.nextLine();
+        playList.add(music);
+        System.out.println("Successfully added " + music);
+    }
+
+    // Plays next recent song from playlist which that specific song will be removed and transfer 
+    // the song's name to history and then plays that song with song's name printed on it.
+    // throw IllegalArgumentException if the playlist is empty.
+    // no return 
+    // Parameter:
+    //   - playlist: the current music queue
+    //   - history: list of previous songs played
+    public static void playSong(Queue<String> playList, Stack<String> history) {
+        if(playList.isEmpty()) {
+            throw new IllegalStateException("There is no music that are queue on your spotify ");
+        }
+        String temp = playList.remove();
+        history.push(temp);
+        System.out.println("Playing song: " + temp);
+    }
+
+    // Print out your history of certain song you have listened.
+    // throw IllegalArgumentException if the history is empty 
+    // of Stack is empty
+    // no return
+    // Parameter:
+    //   - history: list of previous songs played
+    public static void print(Stack<String> history) {
+        if(history.isEmpty()) {
+            throw new IllegalStateException("There is no music played recently "
+                      + "on your spotify history");
+        }
+        Stack<String> song = new Stack<String>();
+        while(!history.isEmpty()) {
+            String playedMusic = history.pop();
+            System.out.println("    " + playedMusic);
+            song.push(playedMusic);
+        }
+        s2s(song, history);
+    }
+
+    // Delete certain music history that user have listened to, if user choose 
+    // positive number they will delete from top(recent) but if its negative it will delete 
+    // from bottom(oldest) and number you choose will be in order from top or bottom to delete 
+    // that amount of music.
+    // throw IllegalArgumentException if the size of history is less than absolute value of 
+    // number of song to delete
+    // no return
+    // Parameter:
+    // - history: list of previous played
+    // - console: user input number of music to delete
+    public static void removeSong(Stack<String> history, Scanner console) {
+        int size = history.size();
+        System.out.println("A positive number will delete from recent history.");
+        System.out.println("A negative number will delete from the beginning of history.");
+        System.out.print("Enter number of songs to delete: ");
+        String input = console.nextLine();
+        int num = Integer.parseInt(input); 
+        if(size < Math.abs(num)) {
+            throw new IllegalArgumentException("Inavlid number of the songs to delete");
+        }
+        if(num > 0) {       
+            for(int i = 0; i < num; i++) {
+                history.pop();
+            }
+        } else if(num < 0) {
+            Stack<String> song = new Stack<String>();
+            s2s(history, song);
+            for(int i = 0; i < Math.abs(num); i++) {
+                song.pop();
+            }
+            s2s(song, history);
+        }
+    }
+
+    // Stack to Stack helper method because code has redundancy of same code.
+    // no exception
+    // no return
+    // Parameter:
+    //      - s1: Stack of musics 
+    //      - s2: Another copy of Stack of musics
+    public static void s2s(Stack<String> s1, Stack<String> s2) {
+        while(!s1.isEmpty()) {
+                String recentMusic = s1.pop();
+                s2.push(recentMusic);
+        }
+    }
+}
